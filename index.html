@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algo Hill Advisors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --forest: #1E3320; --forest-mid: #2D4C26; --sage: #4A7A3A;
+    --leaf: #6B9E54; --leaf-light: #8FC070;
+    --gold: #9B8040; --gold-light: #C4A45A;
+    --cream: #F5F2EB; --parchment: #EDE8DC; --stone: #C8C2B0; --ink: #1A1A18;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Jost', sans-serif; background: var(--cream); color: var(--ink); overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 24px 60px; transition: background 0.4s, backdrop-filter 0.4s, padding 0.4s; }
+  nav.scrolled { background: rgba(245,242,235,0.94); backdrop-filter: blur(12px); padding: 16px 60px; border-bottom: 1px solid rgba(155,128,64,0.15); }
+  .nav-logo { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+  .nav-logo-text { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; letter-spacing: 0.12em; color: var(--cream); text-transform: uppercase; line-height: 1.2; transition: color 0.4s; }
+  nav.scrolled .nav-logo-text { color: var(--forest); }
+  .nav-logo-text span { display: block; font-size: 10px; font-weight: 300; letter-spacing: 0.22em; color: var(--gold-light); transition: color 0.4s; }
+  nav.scrolled .nav-logo-text span { color: var(--gold); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a { font-size: 11px; font-weight: 400; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(245,242,235,0.65); text-decoration: none; transition: color 0.2s; }
+  nav.scrolled .nav-links a { color: var(--forest); }
+  .nav-links a:hover { color: var(--gold-light) !important; }
+
+  /* TITLE CARD */
+  .title-card { height: 100vh; min-height: 700px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; background: var(--forest); }
+  .title-bg { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 115%, rgba(75,122,58,0.22) 0%, transparent 70%), radial-gradient(ellipse 50% 35% at 15% 15%, rgba(155,128,64,0.06) 0%, transparent 60%); }
+  .title-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .title-logo { margin-bottom: 52px; animation: fadeUp 1.4s 0.1s cubic-bezier(0.16,1,0.3,1) both; }
+  .title-name { font-family: 'Cormorant Garamond', serif; font-size: clamp(50px, 7.5vw, 100px); font-weight: 300; color: var(--cream); letter-spacing: 0.06em; line-height: 1.0; animation: fadeUp 1.4s 0.2s cubic-bezier(0.16,1,0.3,1) both; }
+  .title-rule { width: 1px; height: 52px; background: linear-gradient(to bottom, rgba(196,164,90,0.5), transparent); margin: 36px auto; animation: fadeUp 1.4s 0.35s cubic-bezier(0.16,1,0.3,1) both; }
+  .title-descriptor { font-size: 11px; font-weight: 300; letter-spacing: 0.32em; text-transform: uppercase; color: rgba(196,164,90,0.7); animation: fadeUp 1.4s 0.45s cubic-bezier(0.16,1,0.3,1) both; }
+  .title-scroll { position: absolute; bottom: 44px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; animation: fadeUp 1.8s 1s cubic-bezier(0.16,1,0.3,1) both; }
+  .title-scroll span { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(200,194,176,0.35); }
+  .scroll-line { width: 1px; height: 52px; background: linear-gradient(to bottom, rgba(196,164,90,0.5), transparent); animation: scrollPulse 2.2s ease-in-out infinite; }
+
+  /* INTRO */
+  .intro-section { background: var(--forest); padding: 100px 60px 140px; border-top: 1px solid rgba(255,255,255,0.05); }
+  .intro-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+  .intro-statement { font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 3.2vw, 42px); font-weight: 300; color: var(--cream); line-height: 1.55; margin-bottom: 64px; }
+  .intro-statement em { font-style: italic; color: var(--leaf-light); }
+  .intro-pillars { display: flex; justify-content: center; gap: 56px; flex-wrap: wrap; }
+  .intro-pillar { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .intro-pillar-line { width: 1px; height: 32px; background: rgba(196,164,90,0.3); }
+  .intro-pillar span { font-size: 10px; font-weight: 300; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(200,194,176,0.5); }
+
+  /* SECTION BASE */
+  .section-label { font-size: 10px; font-weight: 400; letter-spacing: 0.32em; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; }
+  .section-headline { font-family: 'Cormorant Garamond', serif; font-size: clamp(34px, 4vw, 56px); font-weight: 300; line-height: 1.1; color: var(--forest); }
+  .section-headline em { font-style: italic; }
+  .section-body { font-size: 15px; font-weight: 300; line-height: 1.9; color: #4A4A44; }
+
+  /* ABOUT */
+  #about { padding: 140px 60px; }
+  .about { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; max-width: 1200px; margin: 0 auto; }
+  .about .section-headline { margin-bottom: 32px; }
+  .about-body-2 { margin-top: 22px; }
+  .about-body-3 { margin-top: 22px; }
+  .about-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 40px; margin-top: 60px; padding-top: 60px; border-top: 1px solid rgba(155,128,64,0.2); }
+  .stat-num { font-family: 'Cormorant Garamond', serif; font-size: 48px; font-weight: 300; color: var(--forest); line-height: 1; }
+  .stat-num sup { font-size: 24px; vertical-align: super; }
+  .stat-label { font-size: 11px; font-weight: 300; letter-spacing: 0.15em; color: #7A7A70; text-transform: uppercase; margin-top: 8px; line-height: 1.5; }
+  .about-emblem { width: 100%; max-width: 460px; aspect-ratio: 1; margin: 0 auto; border: 1px solid rgba(155,128,64,0.18); position: relative; display: flex; align-items: center; justify-content: center; padding: 48px; }
+  .about-emblem::before { content: ''; position: absolute; inset: 20px; border: 1px solid rgba(155,128,64,0.08); }
+  .about-emblem-inner { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+  .about-emblem-wordmark { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; color: var(--forest); letter-spacing: 0.15em; text-transform: uppercase; text-align: center; }
+  .about-emblem-sub { font-size: 10px; font-weight: 300; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); text-align: center; }
+  .about-emblem-tags { font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: #7A7A70; text-align: center; line-height: 1.8; }
+
+  /* WHO WE SERVE */
+  .serve-section { background: var(--forest); padding: 120px 60px; }
+  .serve-inner { max-width: 1200px; margin: 0 auto; }
+  .serve-section .section-label { color: var(--gold-light); }
+  .serve-section .section-headline { color: var(--cream); margin-bottom: 64px; }
+  .serve-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; }
+  .serve-card { background: rgba(255,255,255,0.04); padding: 48px 40px; border: 1px solid rgba(255,255,255,0.07); transition: background 0.3s, border-color 0.3s; }
+  .serve-card:hover { background: rgba(155,128,64,0.08); border-color: rgba(196,164,90,0.25); }
+  .serve-icon { width: 36px; height: 36px; margin-bottom: 28px; opacity: 0.65; }
+  .serve-card h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 400; color: var(--cream); margin-bottom: 16px; }
+  .serve-card p { font-size: 13px; font-weight: 300; color: rgba(200,194,176,0.72); line-height: 1.85; }
+
+  /* SERVICES */
+  .services-section { background: var(--parchment); padding: 120px 60px; }
+  .services-inner { max-width: 1200px; margin: 0 auto; }
+  .services-inner .section-headline { margin-bottom: 80px; }
+  .services-list { display: grid; grid-template-columns: 1fr 1fr; }
+  .service-item { padding: 48px 0; border-bottom: 1px solid rgba(30,51,32,0.12); display: grid; grid-template-columns: 60px 1fr; gap: 32px; }
+  .service-item:nth-child(odd) { padding-right: 60px; border-right: 1px solid rgba(30,51,32,0.12); }
+  .service-item:nth-child(even) { padding-left: 60px; }
+  .service-num { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--gold); letter-spacing: 0.1em; padding-top: 4px; }
+  .service-item h3 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 500; color: var(--forest); margin-bottom: 12px; }
+  .service-item p { font-size: 13px; font-weight: 300; color: #5A5A52; line-height: 1.8; }
+
+  /* APPROACH */
+  .approach-section { background: var(--cream); padding: 120px 60px; }
+  .approach-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 120px; align-items: start; }
+  .approach-left .section-headline { margin-bottom: 32px; }
+  .approach-left .section-body { max-width: 440px; margin-bottom: 48px; }
+  .approach-principles { list-style: none; }
+  .approach-principles li { display: flex; gap: 24px; padding: 24px 0; border-bottom: 1px solid rgba(30,51,32,0.1); align-items: flex-start; }
+  .principle-mark { font-family: 'Cormorant Garamond', serif; font-size: 13px; color: var(--gold); padding-top: 3px; flex-shrink: 0; letter-spacing: 0.1em; }
+  .principle-text h4 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: var(--forest); margin-bottom: 6px; }
+  .principle-text p { font-size: 13px; font-weight: 300; color: #5A5A52; line-height: 1.7; }
+  .approach-visual { position: sticky; top: 120px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+  .approach-circle { width: 220px; height: 220px; border: 1px solid rgba(155,128,64,0.3); border-radius: 50%; display: grid; place-items: center; position: relative; text-align: center; }
+  .approach-circle::before { content: ''; position: absolute; inset: 12px; border: 1px solid rgba(155,128,64,0.15); border-radius: 50%; }
+  .approach-circle .big { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 300; letter-spacing: 0.2em; color: var(--forest); text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .approach-circle .small { font-size: 10px; font-weight: 300; letter-spacing: 0.25em; color: var(--gold); text-transform: uppercase; }
+  .approach-caption { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; color: #7A7A70; text-align: center; max-width: 280px; line-height: 1.65; }
+
+  /* TRACK */
+  .track-section { background: var(--forest); padding: 120px 60px; }
+  .track-inner { max-width: 1200px; margin: 0 auto; }
+  .track-section .section-label { color: var(--gold-light); }
+  .track-section .section-headline { color: var(--cream); margin-bottom: 80px; }
+  .track-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 40px; margin-bottom: 80px; }
+  .track-num { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 300; color: var(--leaf-light); line-height: 1; }
+  .track-num sup { font-size: 26px; vertical-align: super; }
+  .track-unit { font-size: 11px; font-weight: 300; letter-spacing: 0.2em; color: var(--stone); text-transform: uppercase; margin-top: 8px; line-height: 1.5; }
+  .track-divider { height: 1px; background: rgba(255,255,255,0.1); margin-bottom: 80px; }
+  .track-roles { display: grid; grid-template-columns: repeat(3,1fr); gap: 40px; }
+  .track-role { padding: 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); transition: border-color 0.3s, background 0.3s; }
+  .track-role:hover { border-color: rgba(196,164,90,0.2); background: rgba(155,128,64,0.07); }
+  .track-role-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500; color: var(--cream); margin-bottom: 4px; }
+  .track-role-org { font-size: 11px; font-weight: 300; color: var(--gold-light); letter-spacing: 0.1em; margin-bottom: 24px; }
+  .track-role p { font-size: 13px; font-weight: 300; color: rgba(200,194,176,0.7); line-height: 1.8; }
+
+  /* CONTACT */
+  .contact-section { background: var(--parchment); padding: 160px 60px; }
+  .contact-inner { max-width: 760px; margin: 0 auto; text-align: center; }
+  .contact-inner .section-headline { margin-bottom: 28px; }
+  .contact-inner .section-body { margin: 0 auto 64px; max-width: 500px; }
+  .contact-info { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .contact-email { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300; font-style: italic; color: var(--forest); cursor: pointer; transition: color 0.2s; border: none; background: none; }
+  .contact-email:hover { color: var(--sage); }
+  .contact-sep { width: 1px; height: 40px; background: rgba(155,128,64,0.3); }
+  .contact-detail { font-size: 13px; font-weight: 300; letter-spacing: 0.15em; color: #7A7A70; text-transform: uppercase; }
+  .contact-li { margin-top: 40px; display: inline-flex; align-items: center; gap: 12px; font-size: 11px; font-weight: 400; letter-spacing: 0.22em; text-transform: uppercase; color: var(--forest); text-decoration: none; border: 1px solid rgba(30,51,32,0.3); padding: 16px 32px; transition: background 0.25s, color 0.25s; }
+  .contact-li:hover { background: var(--forest); color: var(--cream); }
+
+  /* FOOTER */
+  footer { background: var(--ink); padding: 48px 60px; display: flex; justify-content: space-between; align-items: center; }
+  .footer-left { display: flex; align-items: center; gap: 14px; }
+  .footer-name { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400; letter-spacing: 0.12em; color: var(--stone); text-transform: uppercase; }
+  .footer-right { font-size: 11px; font-weight: 300; color: #4A4A44; letter-spacing: 0.1em; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scrollPulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .reveal.visible { opacity: 1; transform: none; }
+  .d1 { transition-delay: 0.12s; } .d2 { transition-delay: 0.22s; } .d3 { transition-delay: 0.32s; }
+
+  @media (max-width: 900px) {
+    nav, nav.scrolled { padding: 18px 24px; }
+    .nav-links { display: none; }
+    #about, .intro-section, .serve-section, .services-section, .approach-section, .track-section, .contact-section { padding: 80px 24px; }
+    .about, .approach-inner { grid-template-columns: 1fr; gap: 48px; }
+    .about-emblem, .approach-visual { display: none; }
+    .serve-grid, .track-roles { grid-template-columns: 1fr; }
+    .services-list { grid-template-columns: 1fr; }
+    .service-item:nth-child(odd) { padding-right: 0; border-right: none; }
+    .service-item:nth-child(even) { padding-left: 0; }
+    .track-grid { grid-template-columns: repeat(2,1fr); }
+    .intro-pillars { gap: 28px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <svg width="38" height="44" viewBox="0 0 42 48" fill="none">
+      <path d="M21 2C10.5 2 2 10.5 2 21V38H40V21C40 10.5 31.5 2 21 2Z" fill="none" stroke="rgba(143,192,112,0.7)" stroke-width="2.2"/>
+      <ellipse cx="21" cy="38" rx="14" ry="5" fill="#4A7A3A" opacity="0.8"/>
+      <path d="M21 14 L17.5 22 H21 H24.5 L21 14Z" fill="#8FC070"/>
+      <path d="M21 20 L17.8 27.5 H21 H24.2 L21 20Z" fill="#7ABF58"/>
+      <path d="M21 26 L17.5 33 H21 H24.5 L21 26Z" fill="#6B9E54"/>
+      <path d="M13 19 L10 25.5 H13 H16 L13 19Z" fill="#7ABF58"/>
+      <path d="M13 25 L10.5 30.5 H13 H15.5 L13 25Z" fill="#6B9E54"/>
+      <path d="M29 19 L26 25.5 H29 H32 L29 19Z" fill="#7ABF58"/>
+      <path d="M29 25 L26.5 30.5 H29 H31.5 L29 25Z" fill="#6B9E54"/>
+    </svg>
+    <div class="nav-logo-text">Algo Hill<span>Advisors</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#approach">Approach</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="title-card">
+  <div class="title-bg"></div>
+  <div class="title-content">
+    <div class="title-logo">
+      <svg width="78" height="90" viewBox="0 0 42 48" fill="none">
+        <path d="M21 2C10.5 2 2 10.5 2 21V38H40V21C40 10.5 31.5 2 21 2Z" fill="none" stroke="rgba(143,192,112,0.55)" stroke-width="2.2"/>
+        <ellipse cx="21" cy="38" rx="14" ry="5" fill="#4A7A3A" opacity="0.75"/>
+        <path d="M21 14 L17.5 22 H21 H24.5 L21 14Z" fill="#8FC070"/>
+        <path d="M21 20 L17.8 27.5 H21 H24.2 L21 20Z" fill="#7ABF58"/>
+        <path d="M21 26 L17.5 33 H21 H24.5 L21 26Z" fill="#6B9E54"/>
+        <path d="M13 19 L10 25.5 H13 H16 L13 19Z" fill="#7ABF58"/>
+        <path d="M13 25 L10.5 30.5 H13 H15.5 L13 25Z" fill="#6B9E54"/>
+        <path d="M29 19 L26 25.5 H29 H32 L29 19Z" fill="#7ABF58"/>
+        <path d="M29 25 L26.5 30.5 H29 H31.5 L29 25Z" fill="#6B9E54"/>
+      </svg>
+    </div>
+    <h1 class="title-name">Algo Hill Advisors</h1>
+    <div class="title-rule"></div>
+    <p class="title-descriptor">Strategy &#183; Operations &#183; Growth</p>
+  </div>
+  <div class="title-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<section class="intro-section">
+  <div class="intro-inner">
+    <p class="intro-statement reveal">
+      Helping <em>operators and investors</em> work through the hard parts &#8212; when a business needs to be rebuilt, when a new model needs to prove itself, or when the team that got you here isn&#8217;t quite right for what comes next.
+    </p>
+    <div class="intro-pillars reveal d1">
+      <div class="intro-pillar"><div class="intro-pillar-line"></div><span>Operational Transformation</span></div>
+      <div class="intro-pillar"><div class="intro-pillar-line"></div><span>M&amp;A &amp; Capital</span></div>
+      <div class="intro-pillar"><div class="intro-pillar-line"></div><span>Growth Strategy</span></div>
+      <div class="intro-pillar"><div class="intro-pillar-line"></div><span>Leadership</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="about">
+    <div class="about-left reveal">
+      <div class="section-label">About</div>
+      <h2 class="section-headline" style="margin-bottom:32px;"><em>Todd Wolf</em></h2>
+      <p class="section-body">Todd works with PE-backed, venture-backed, and founder-led businesses at the moments that tend to matter most &#8212; when a platform needs to find its footing, when a new model needs to prove it can scale, or when an organization has outgrown the leadership structure that got it there.</p>
+      <p class="section-body about-body-2">His background covers more ground than most. After an MBA from Columbia, he started in investment banking before founding and running a fintech software company for seven years. That combination &#8212; capital markets and then actually building something from scratch &#8212; shapes how he approaches the work now. He thinks less like a consultant and more like an operator who&#8217;s been accountable for what comes next.</p>
+      <p class="section-body about-body-3">Most of his executive career has been in healthcare services &#8212; CEO, COO, and CBO across multi-site platforms, retail health, and employer-based models. He&#8217;s run turnarounds, integrations, and greenfield launches in PE-backed environments where the timeline is short and there isn&#8217;t much room to drift.</p>
+      <div class="about-stats">
+        <div class="reveal d1"><div class="stat-num">20<sup>+</sup></div><div class="stat-label">Years in Operating<br>Leadership</div></div>
+        <div class="reveal d2"><div class="stat-num">4</div><div class="stat-label">PE &amp; VC-Backed<br>Platforms Led</div></div>
+        <div class="reveal d3"><div class="stat-num">3<sup>x</sup></div><div class="stat-label">Successful Strategic<br>Exits</div></div>
+      </div>
+    </div>
+    <div class="about-emblem reveal d2">
+      <div class="about-emblem-inner">
+        <svg width="112" height="128" viewBox="0 0 42 48" fill="none">
+          <path d="M21 2C10.5 2 2 10.5 2 21V38H40V21C40 10.5 31.5 2 21 2Z" fill="rgba(30,51,32,0.05)" stroke="#2D4C26" stroke-width="2.2"/>
+          <ellipse cx="21" cy="38" rx="14" ry="5" fill="#7DB05A" opacity="0.55"/>
+          <path d="M21 14 L17.5 22 H21 H24.5 L21 14Z" fill="#4A7A3A"/>
+          <path d="M21 20 L17.8 27.5 H21 H24.2 L21 20Z" fill="#5E9148"/>
+          <path d="M21 26 L17.5 33 H21 H24.5 L21 26Z" fill="#6B9E54"/>
+          <path d="M13 19 L10 25.5 H13 H16 L13 19Z" fill="#5E9148"/>
+          <path d="M13 25 L10.5 30.5 H13 H15.5 L13 25Z" fill="#6B9E54"/>
+          <path d="M29 19 L26 25.5 H29 H32 L29 19Z" fill="#5E9148"/>
+          <path d="M29 25 L26.5 30.5 H29 H31.5 L29 25Z" fill="#6B9E54"/>
+        </svg>
+        <div class="about-emblem-wordmark">Algo Hill</div>
+        <div class="about-emblem-sub">Advisors</div>
+        <div class="about-emblem-tags">Private Equity &#183; Venture Capital<br>Founder-Led Companies</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="serve-section" id="serve">
+  <div class="serve-inner">
+    <div class="section-label reveal">Who He Works With</div>
+    <h2 class="section-headline reveal" style="margin-bottom:64px;">The work fits a few<br><em>situations pretty well</em></h2>
+    <div class="serve-grid">
+      <div class="serve-card reveal">
+        <svg class="serve-icon" viewBox="0 0 40 40" fill="none"><path d="M8 32V16l12-8 12 8v16" stroke="#8FC070" stroke-width="1.5"/><rect x="15" y="22" width="10" height="10" stroke="#8FC070" stroke-width="1.2"/></svg>
+        <h3>PE-Backed Platforms</h3>
+        <p>Sponsors who need operating support between acquisition and exit &#8212; whether that&#8217;s helping a management team get the business performing, working through an integration, or filling a gap when the timing on a hire hasn&#8217;t worked out.</p>
+      </div>
+      <div class="serve-card reveal d1">
+        <svg class="serve-icon" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="14" r="6" stroke="#8FC070" stroke-width="1.5"/><path d="M8 34c0-6.6 5.4-12 12-12s12 5.4 12 12" stroke="#8FC070" stroke-width="1.5"/></svg>
+        <h3>Founder-Led Companies</h3>
+        <p>Founders who are past the point where figuring it out as you go is enough. Usually the issue is operational &#8212; the business has grown faster than the infrastructure, or there&#8217;s a raise coming and the fundamentals need to be sharper.</p>
+      </div>
+      <div class="serve-card reveal d2">
+        <svg class="serve-icon" viewBox="0 0 40 40" fill="none"><path d="M6 28l10-12 8 6 10-14" stroke="#8FC070" stroke-width="1.5" stroke-linecap="round"/><circle cx="34" cy="8" r="3" stroke="#8FC070" stroke-width="1.2"/></svg>
+        <h3>VC-Backed Companies</h3>
+        <p>Venture-backed teams that need someone who can move fast and has actually run something before. The problems are usually familiar &#8212; growth that&#8217;s outpacing the organization, a new market that needs a real plan, or a leadership transition that&#8217;s harder than expected.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="services-section" id="services">
+  <div class="services-inner">
+    <div class="section-label reveal">The Work</div>
+    <h2 class="section-headline reveal">What the engagements<br><em>usually look like</em></h2>
+    <div class="services-list">
+      <div class="service-item reveal"><div class="service-num">01</div><div><h3>Operational Transformation</h3><p>Getting the business to run better &#8212; tighter cost structure, cleaner processes, clearer accountability. Usually involves figuring out where the margin is going and building the systems to stop it.</p></div></div>
+      <div class="service-item reveal d1"><div class="service-num">02</div><div><h3>M&amp;A Preparation &amp; Integration</h3><p>Helping companies get ready to sell, or helping them absorb something they&#8217;ve bought. Both are harder than they look. The prep work on the sell side tends to surface things that needed fixing anyway.</p></div></div>
+      <div class="service-item reveal d1"><div class="service-num">03</div><div><h3>Growth Strategy &amp; Planning</h3><p>Building a plan for what comes next &#8212; new markets, new sites, new revenue lines. The goal is something that holds up under pressure, not just something that sounds good in a deck.</p></div></div>
+      <div class="service-item reveal d2"><div class="service-num">04</div><div><h3>Capital Raise Support</h3><p>Working with management teams getting ready to raise. That usually means tightening the story, making sure the numbers are defensible, and helping the team get comfortable with the questions they&#8217;re going to get.</p></div></div>
+      <div class="service-item reveal d2"><div class="service-num">05</div><div><h3>Leadership Transitions</h3><p>Stepping in during a gap &#8212; new CEO, departing exec, team that needs to be restructured. The job is to keep things moving and make sure nothing important falls through the cracks while the permanent solution gets sorted out.</p></div></div>
+      <div class="service-item reveal d3"><div class="service-num">06</div><div><h3>Business Development</h3><p>Finding and building the partnerships that actually move the needle. This one takes longer than most people expect, but the right relationships tend to be worth it.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="approach-section" id="approach">
+  <div class="approach-inner">
+    <div class="approach-left">
+      <div class="section-label reveal">How It Works</div>
+      <h2 class="section-headline reveal">Straightforward<br><em>by design.</em></h2>
+      <p class="section-body reveal">Todd leads the work directly. Depending on what the engagement needs, he&#8217;ll bring in people he&#8217;s worked with before &#8212; operators and specialists he trusts. The work doesn&#8217;t get handed off to someone junior. The right people get pulled in when it actually helps.</p>
+      <ul class="approach-principles">
+        <li class="reveal"><div class="principle-mark">I</div><div class="principle-text"><h4>He&#8217;s run things</h4><p>The recommendations come from having actually been in the seat &#8212; not from frameworks. That tends to make a difference when the situation gets complicated.</p></div></li>
+        <li class="reveal d1"><div class="principle-mark">II</div><div class="principle-text"><h4>He stays involved</h4><p>The work doesn&#8217;t end with a presentation. If something isn&#8217;t working the way it should, that&#8217;s still his problem to help fix.</p></div></li>
+        <li class="reveal d2"><div class="principle-mark">III</div><div class="principle-text"><h4>He&#8217;s honest about what he sees</h4><p>If the issue is something different from what you think it is, he&#8217;ll say so. That&#8217;s usually more useful than hearing what you&#8217;d like to hear.</p></div></li>
+        <li class="reveal d3"><div class="principle-mark">IV</div><div class="principle-text"><h4>He moves at your pace</h4><p>Some situations need to move fast. Some need more time. He&#8217;s worked in both and knows the difference.</p></div></li>
+      </ul>
+    </div>
+    <div class="approach-visual reveal d2">
+      <div class="approach-circle">
+        <div>
+          <svg width="52" height="60" viewBox="0 0 42 48" fill="none" style="display:block;margin:0 auto 14px;">
+            <path d="M21 2C10.5 2 2 10.5 2 21V38H40V21C40 10.5 31.5 2 21 2Z" fill="none" stroke="#2D4C26" stroke-width="2.2"/>
+            <ellipse cx="21" cy="38" rx="14" ry="5" fill="#6B9E54" opacity="0.6"/>
+            <path d="M21 14 L17.5 22 H21 H24.5 L21 14Z" fill="#4A7A3A"/>
+            <path d="M21 20 L17.8 27.5 H21 H24.2 L21 20Z" fill="#5E9148"/>
+            <path d="M21 26 L17.5 33 H21 H24.5 L21 26Z" fill="#6B9E54"/>
+            <path d="M13 19 L10 25.5 H13 H16 L13 19Z" fill="#5E9148"/>
+            <path d="M13 25 L10.5 30.5 H13 H15.5 L13 25Z" fill="#6B9E54"/>
+            <path d="M29 19 L26 25.5 H29 H32 L29 19Z" fill="#5E9148"/>
+            <path d="M29 25 L26.5 30.5 H29 H31.5 L29 25Z" fill="#6B9E54"/>
+          </svg>
+          <span class="big">Algo Hill</span>
+          <span class="small">Advisors</span>
+        </div>
+      </div>
+      <p class="approach-caption">He leads the work directly and pulls in people he trusts when the engagement calls for it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div class="section-label reveal" style="text-align:center;">Get In Touch</div>
+    <h2 class="section-headline reveal" style="text-align:center;">Happy to<br><em>talk through it</em></h2>
+    <p class="section-body reveal" style="text-align:center;margin-top:24px;">If you&#8217;re working through something and want to think it through with someone who&#8217;s been there, feel free to reach out.</p>
+    <div class="contact-info reveal">
+      <span class="contact-email" id="email-display">todd.wolf &#64; algohill.com</span>
+      <div class="contact-sep"></div>
+      <span class="contact-detail">(203) 969-5664</span>
+      <a href="https://linkedin.com/in/toddwolf" target="_blank" rel="noopener" class="contact-li">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0H5C2.2 0 0 2.2 0 5v14c0 2.8 2.2 5 5 5h14c2.8 0 5-2.2 5-5V5c0-2.8-2.2-5-5-5zM8 19H5V8h3v11zM6.5 6.7C5.5 6.7 4.7 5.9 4.7 5s.8-1.7 1.8-1.7S8.3 4.1 8.3 5s-.9 1.7-1.8 1.7zM20 19h-3v-5.6c0-1.3-.5-2.2-1.6-2.2-.9 0-1.4.6-1.6 1.2-.1.2-.1.5-.1.8V19h-3V8h3v1.5c.4-.6 1.1-1.5 2.7-1.5 2 0 3.6 1.3 3.6 4.1V19z"/></svg>
+        LinkedIn
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">
+    <svg width="26" height="30" viewBox="0 0 42 48" fill="none">
+      <path d="M21 2C10.5 2 2 10.5 2 21V38H40V21C40 10.5 31.5 2 21 2Z" fill="none" stroke="rgba(143,192,112,0.4)" stroke-width="2.2"/>
+      <ellipse cx="21" cy="38" rx="14" ry="5" fill="#4A7A3A" opacity="0.5"/>
+      <path d="M21 14 L17.5 22 H21 H24.5 L21 14Z" fill="#5E9148"/>
+      <path d="M21 20 L17.8 27.5 H21 H24.2 L21 14Z" fill="#4A7A3A"/>
+      <path d="M13 19 L10 25.5 H13 H16 L13 19Z" fill="#4A7A3A"/>
+      <path d="M29 19 L26 25.5 H29 H32 L29 19Z" fill="#4A7A3A"/>
+    </svg>
+    <span class="footer-name">Algo Hill Advisors</span>
+  </div>
+  <div class="footer-right">&#169; 2026 Algo Hill Advisors LLC</div>
+</footer>
+
+<script>
+(function() {
+  var nav = document.getElementById('nav');
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.reveal').forEach(function(r) { observer.observe(r); });
+
+  document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+    a.addEventListener('click', function(e) {
+      var t = document.querySelector(a.getAttribute('href'));
+      if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+  var em = document.getElementById('email-display');
+  if (em) {
+    em.addEventListener('click', function() {
+      window.location.href = 'mai' + 'lto:todd.wolf' + '@' + 'algohill.com';
+    });
+    em.title = 'Send email';
+  }
+})();
+</script>
+</body>
+</html>
